@@ -114,6 +114,18 @@
   .exp-box:nth-child(6){
     animation-delay: 6s;
   }
+
+  .exp-box:nth-child(7){
+    animation-delay: 7s;
+  }
+
+  .exp-box:nth-child(8){
+    animation-delay: 8s;
+  }
+
+  .exp-box:nth-child(9){
+    animation-delay: 9s;
+  }
   
   .exp-box h2{
     font-weight: 600;
@@ -196,6 +208,12 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.swiper-slide:nth-child(6),
+.swiper-slide:nth-child(7) {
+  background: transparent;
+}
+
 /*.swiper-slide:nth-child(4n) {
   background-color: rgb(211, 122, 7);
 }

@@ -1,4 +1,7 @@
 function initializeCertSwiper() {
+  const swiperRoot = document.querySelector(".mySwiper");
+  if (!swiperRoot) return;
+
   new Swiper(".mySwiper", {
     effect: "cube",
     grabCursor: true,
