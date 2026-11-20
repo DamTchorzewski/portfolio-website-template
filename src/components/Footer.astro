@@ -1,0 +1,50 @@
+---
+import { site } from "@/config/site";
+import { withBase } from "@/lib/url";
+import Icon from "./Icon.astro";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container row">
+    <p>
+      &copy; {year} {site.footer.note}
+    </p>
+    <a class="up" href={withBase("#top")}>
+      Back to top
+      <Icon name="arrow-up-right" />
+    </a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: 2rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .up {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .up:hover {
+    color: var(--accent);
+  }
+</style>

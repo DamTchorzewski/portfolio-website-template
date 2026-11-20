@@ -1,0 +1,79 @@
+---
+import { site } from "@/config/site";
+import Icon from "./Icon.astro";
+
+const { services } = site;
+---
+
+{services.length > 0 && (
+  <section id="services" class="section alt" aria-labelledby="services-title">
+    <div class="container">
+      <div class="reveal">
+        <p class="eyebrow">Services</p>
+        <h2 id="services-title" class="section-title">
+          How I can help
+        </h2>
+      </div>
+      <ul class="grid">
+        {services.map((service, i) => (
+          <li class="card reveal" style={`--delay: ${i * 0.07}s`}>
+            <span class="icon-wrap">
+              <Icon name={service.icon} />
+            </span>
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .alt {
+    background: var(--surface-2);
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .card {
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition:
+      border-color 0.2s,
+      transform 0.3s var(--ease);
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .icon-wrap {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1.25rem;
+    border-radius: 0.9rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  h3 {
+    margin-bottom: 0.6rem;
+    font-size: 1.25rem;
+  }
+
+  p {
+    color: var(--muted);
+    font-size: 1rem;
+  }
+</style>
