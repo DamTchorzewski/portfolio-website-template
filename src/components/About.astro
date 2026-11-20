@@ -1,0 +1,127 @@
+---
+import { site } from "@/config/site";
+
+const { about, skills } = site;
+---
+
+{about.paragraphs.length > 0 && (
+  <section id="about" class="section" aria-labelledby="about-title">
+    <div class="container layout">
+      <div class="text reveal">
+        <p class="eyebrow">About</p>
+        <h2 id="about-title" class="section-title">
+          {about.title}
+        </h2>
+        {about.paragraphs.map((text) => (
+          <p class="para">{text}</p>
+        ))}
+      </div>
+
+      <div class="side">
+        {about.facts.length > 0 && (
+          <dl class="facts reveal" style="--delay: 0.1s">
+            {about.facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        {skills.length > 0 && (
+          <div class="skills reveal" style="--delay: 0.15s">
+            <h3>Skills</h3>
+            {skills.map((group) => (
+              <div class="group">
+                <p class="group-name">{group.group}</p>
+                <ul class="chips">
+                  {group.items.map((item) => (
+                    <li class="chip">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .layout {
+    display: grid;
+    gap: 3rem;
+  }
+
+  @media (min-width: 60rem) {
+    .layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+    }
+  }
+
+  .para {
+    margin-top: 1.25rem;
+    color: var(--muted);
+  }
+
+  .side {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .facts,
+  .skills {
+    margin: 0;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .facts {
+    display: grid;
+    gap: 1rem 2rem;
+  }
+
+  @media (min-width: 34rem) {
+    .facts {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .facts dt {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .facts dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .skills h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .group + .group {
+    margin-top: 1.1rem;
+  }
+
+  .group-name {
+    margin-bottom: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>

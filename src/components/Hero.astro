@@ -1,0 +1,315 @@
+---
+import { site } from "@/config/site";
+import { asset, initials, withBase } from "@/lib/url";
+import Icon from "./Icon.astro";
+
+const { person, stats } = site;
+
+// "I build [fast, accessible] websites" -> the part in brackets gets the accent gradient.
+const parts = person.headline.split(/(\[[^\]]+\])/).filter(Boolean);
+const chips = site.skills.flatMap((group) => group.items).slice(0, 3);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container grid">
+    <div class="copy">
+      {person.availability && (
+        <p class="status reveal">
+          <span class="pulse" aria-hidden="true" />
+          {person.availability}
+        </p>
+      )}
+      <p class="role reveal" style="--delay: 0.05s">
+        {person.role}
+      </p>
+      <h1 id="hero-title" class="reveal" style="--delay: 0.1s">
+        {parts.map((part) =>
+          part.startsWith("[") ? <span class="mark">{part.slice(1, -1)}</span> : part,
+        )}
+      </h1>
+      <p class="intro reveal" style="--delay: 0.15s">
+        {person.intro}
+      </p>
+      <div class="cta reveal" style="--delay: 0.2s">
+        <a class="btn btn--primary" href={withBase("#work")}>
+          See my work
+          <Icon name="arrow-right" />
+        </a>
+        <a class="btn btn--ghost" href={withBase("#contact")}>
+          Get in touch
+        </a>
+        {person.cv && (
+          <a class="btn btn--ghost" href={asset(person.cv)} download>
+            <Icon name="download" />
+            Download CV
+          </a>
+        )}
+      </div>
+      {stats.length > 0 && (
+        <dl class="stats reveal" style="--delay: 0.25s">
+          {stats.map((stat) => (
+            <div>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+
+    <div class="visual reveal" style="--delay: 0.2s">
+      <div class="portrait">
+        {person.photo ? (
+          <img src={asset(person.photo)} alt={person.photoAlt ?? ""} width="480" height="560" />
+        ) : (
+          <span class="monogram" aria-hidden="true">
+            {initials(person.name)}
+          </span>
+        )}
+      </div>
+      {chips.map((chip, i) => (
+        <span class={`float float-${i + 1}`} aria-hidden="true">
+          {chip}
+        </span>
+      ))}
+      <p class="place">
+        <Icon name="pin" />
+        {person.location}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(3rem, 8vw, 6rem) calc(var(--section) * 0.6);
+    overflow: clip;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: min(70rem, 120vw);
+    aspect-ratio: 1;
+    background:
+      radial-gradient(closest-side, oklch(0.75 0.15 var(--hue) / 0.25), transparent),
+      radial-gradient(
+        closest-side at 30% 70%,
+        oklch(0.75 0.15 calc(var(--hue) + 60) / 0.18),
+        transparent
+      );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  @media (min-width: 60rem) {
+    .grid {
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 4rem;
+    }
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    padding: 0.4rem 1rem 0.4rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .pulse {
+    position: relative;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: light-dark(oklch(0.6 0.17 150), oklch(0.78 0.17 150));
+  }
+
+  .pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: ping 2.2s var(--ease) infinite;
+  }
+
+  @keyframes ping {
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  .role {
+    margin-bottom: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    max-width: 16ch;
+  }
+
+  .mark {
+    color: var(--accent);
+  }
+
+  .intro {
+    margin-top: 1.5rem;
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: 1.1875rem;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+    margin: 3rem 0 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .stats dt {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .stats dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .visual {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 26rem);
+  }
+
+  .portrait {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 6 / 7;
+    border-radius: 2rem 2rem 8rem 2rem;
+    background:
+      radial-gradient(
+        circle at 30% 20%,
+        oklch(0.85 0.1 calc(var(--hue) + 40) / 0.9),
+        transparent 55%
+      ),
+      linear-gradient(
+        160deg,
+        var(--accent-soft),
+        light-dark(oklch(0.85 0.09 var(--hue)), oklch(0.32 0.1 var(--hue)))
+      );
+    box-shadow: 0 30px 60px -30px var(--shadow);
+    overflow: hidden;
+  }
+
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .monogram {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 14vw, 8rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: light-dark(oklch(0.45 0.18 var(--hue)), oklch(0.85 0.1 var(--hue)));
+  }
+
+  .float {
+    position: absolute;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 12px 28px -14px var(--shadow);
+    font-size: 0.9rem;
+    font-weight: 600;
+    animation: bob 6s ease-in-out infinite;
+  }
+
+  .float-1 {
+    top: 12%;
+    left: -8%;
+  }
+
+  .float-2 {
+    top: 46%;
+    right: -6%;
+    animation-delay: -2s;
+  }
+
+  .float-3 {
+    bottom: 16%;
+    left: -4%;
+    animation-delay: -4s;
+  }
+
+  @keyframes bob {
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .place {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 8px 20px -12px var(--shadow);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 40rem) {
+    .float-1,
+    .float-3 {
+      left: 0.5rem;
+    }
+
+    .float-2 {
+      right: 0.5rem;
+    }
+  }
+</style>

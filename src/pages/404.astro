@@ -1,0 +1,37 @@
+---
+import Base from "@/layouts/Base.astro";
+import { withBase } from "@/lib/url";
+---
+
+<Base title="Page not found">
+  <section class="container lost">
+    <p class="eyebrow">Error 404</p>
+    <h1>This page does not exist</h1>
+    <p>The link may be broken or the page may have moved.</p>
+    <a class="btn btn--primary" href={withBase()}>
+      Back to the home page
+    </a>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    padding-block: var(--section);
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 6vw, 4rem);
+  }
+
+  p {
+    color: var(--muted);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--accent);
+  }
+</style>

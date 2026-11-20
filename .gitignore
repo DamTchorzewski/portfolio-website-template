@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+/.astro
+
+# env files (the example file is tracked, real values never are)
+.env*
+!.env.example
+
+# local working files (renders, exports, archives, notes): never committed, same in every project
+/.scratch/
+
+# misc
+.DS_Store
+*.log
+*.tsbuildinfo
+/.claude/
