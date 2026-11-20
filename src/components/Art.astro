@@ -1,0 +1,179 @@
+---
+// Generated cover art for a project: an abstract interface drawn in SVG from a hue and the slug.
+// No image files, no personal content; replace it with a real screenshot through `image` in the config.
+import type { ArtVariant } from "@/lib/types";
+import { seeded } from "@/lib/url";
+
+interface Props {
+  variant: ArtVariant;
+  hue: number;
+  seed: string;
+}
+
+const { variant, hue, seed } = Astro.props;
+const rand = seeded(seed);
+const id = `art-${seed}`;
+const r = (min: number, max: number) => Math.round(min + rand() * (max - min));
+
+// a smooth line chart and a few bars for the dashboard variant
+const points = Array.from({ length: 8 }, (_, i) => [60 + i * 62, r(40, 120)] as const);
+const line = points.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ");
+const bars = Array.from({ length: 7 }, () => r(30, 90));
+const dots = Array.from({ length: 9 }, () => ({ x: r(40, 600), y: r(30, 370), s: r(4, 12) }));
+---
+
+<svg
+  class="art"
+  style={`--h:${hue}`}
+  viewBox="0 0 640 400"
+  preserveAspectRatio="xMidYMid slice"
+  role="presentation"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" class="stop-a"></stop>
+      <stop offset="1" class="stop-b"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill={`url(#${id})`}></rect>
+  <circle cx={r(480, 600)} cy={r(20, 90)} r={r(110, 160)} class="glow"></circle>
+  <circle cx={r(20, 120)} cy={r(320, 400)} r={r(90, 140)} class="glow glow-2"></circle>
+
+  {variant === "browser" && (
+    <g>
+      <rect x="70" y="50" width="500" height="310" rx="16" class="card"></rect>
+      <path d="M70 66a16 16 0 0 1 16-16h468a16 16 0 0 1 16 16v22H70z" class="bar"></path>
+      <circle cx="94" cy="69" r="5" class="dot"></circle>
+      <circle cx="112" cy="69" r="5" class="dot"></circle>
+      <circle cx="130" cy="69" r="5" class="dot"></circle>
+      <rect x="100" y="112" width="220" height="22" rx="8" class="solid"></rect>
+      <rect x="100" y="148" width="320" height="12" rx="6" class="soft"></rect>
+      <rect x="100" y="170" width="260" height="12" rx="6" class="soft"></rect>
+      <rect x="100" y="204" width="96" height="32" rx="16" class="solid"></rect>
+      <rect x="448" y="112" width="92" height="124" rx="12" class="tint"></rect>
+      <rect x="100" y="262" width="130" height="68" rx="12" class="tint"></rect>
+      <rect x="245" y="262" width="130" height="68" rx="12" class="soft"></rect>
+      <rect x="390" y="262" width="150" height="68" rx="12" class="tint"></rect>
+    </g>
+  )}
+
+  {variant === "dashboard" && (
+    <g>
+      <rect x="50" y="44" width="540" height="312" rx="16" class="card"></rect>
+      <rect x="50" y="44" width="92" height="312" rx="16" class="bar"></rect>
+      <rect x="68" y="72" width="56" height="10" rx="5" class="solid"></rect>
+      <rect x="68" y="104" width="56" height="8" rx="4" class="soft"></rect>
+      <rect x="68" y="124" width="56" height="8" rx="4" class="soft"></rect>
+      <rect x="68" y="144" width="56" height="8" rx="4" class="soft"></rect>
+      <rect x="160" y="64" width="124" height="54" rx="10" class="tint"></rect>
+      <rect x="298" y="64" width="124" height="54" rx="10" class="tint"></rect>
+      <rect x="436" y="64" width="136" height="54" rx="10" class="tint"></rect>
+      <g transform="translate(110 140)">
+        <path d={line} class="chart" fill="none"></path>
+        {points.map(([x, y]) => (
+          <circle cx={x} cy={y} r="4" class="solid" />
+        ))}
+      </g>
+      {bars.map((h, i) => (
+        <rect x={170 + i * 56} y={336 - h} width="30" height={h} rx="6" class="soft" />
+      ))}
+    </g>
+  )}
+
+  {variant === "mobile" && (
+    <g>
+      <rect x="150" y="34" width="150" height="332" rx="24" class="card"></rect>
+      <rect x="170" y="62" width="110" height="64" rx="12" class="tint"></rect>
+      <rect x="170" y="140" width="80" height="10" rx="5" class="solid"></rect>
+      <rect x="170" y="162" width="110" height="8" rx="4" class="soft"></rect>
+      <rect x="170" y="180" width="96" height="8" rx="4" class="soft"></rect>
+      <rect x="170" y="212" width="110" height="52" rx="12" class="soft"></rect>
+      <rect x="170" y="276" width="110" height="52" rx="12" class="tint"></rect>
+      <rect x="340" y="62" width="150" height="332" rx="24" class="card"></rect>
+      <circle cx="415" cy="130" r="34" class="solid"></circle>
+      <rect x="372" y="186" width="86" height="10" rx="5" class="solid"></rect>
+      <rect x="360" y="212" width="110" height="8" rx="4" class="soft"></rect>
+      <rect x="360" y="232" width="110" height="8" rx="4" class="soft"></rect>
+      <rect x="360" y="270" width="110" height="36" rx="18" class="solid"></rect>
+    </g>
+  )}
+
+  {variant === "orbs" && (
+    <g>
+      <circle cx="320" cy="200" r="150" class="ring"></circle>
+      <circle cx="320" cy="200" r="104" class="ring"></circle>
+      <circle cx="320" cy="200" r="58" class="card"></circle>
+      <circle cx="320" cy="200" r="20" class="solid"></circle>
+      <circle cx="448" cy="130" r="14" class="solid"></circle>
+      <circle cx="206" cy="262" r="10" class="tint"></circle>
+      {dots.map((d) => (
+        <circle cx={d.x} cy={d.y} r={d.s} class="soft" />
+      ))}
+    </g>
+  )}
+</svg>
+
+<style>
+  .art {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stop-a {
+    stop-color: light-dark(oklch(0.93 0.07 var(--h)), oklch(0.34 0.1 var(--h)));
+  }
+
+  .stop-b {
+    stop-color: light-dark(
+      oklch(0.8 0.12 calc(var(--h) + 40)),
+      oklch(0.22 0.07 calc(var(--h) + 40))
+    );
+  }
+
+  .glow {
+    fill: light-dark(oklch(1 0 0 / 0.45), oklch(0.7 0.15 var(--h) / 0.25));
+  }
+
+  .glow-2 {
+    fill: light-dark(oklch(0.7 0.15 var(--h) / 0.25), oklch(0.55 0.18 calc(var(--h) + 40) / 0.3));
+  }
+
+  .card {
+    fill: light-dark(oklch(1 0 0 / 0.92), oklch(0.2 0.03 var(--h) / 0.92));
+  }
+
+  .bar {
+    fill: light-dark(oklch(0.94 0.02 var(--h)), oklch(0.27 0.04 var(--h)));
+  }
+
+  .dot {
+    fill: light-dark(oklch(0.8 0.03 var(--h)), oklch(0.42 0.05 var(--h)));
+  }
+
+  .solid {
+    fill: light-dark(oklch(0.52 0.2 var(--h)), oklch(0.76 0.15 var(--h)));
+  }
+
+  .tint {
+    fill: light-dark(oklch(0.88 0.08 var(--h)), oklch(0.36 0.1 var(--h)));
+  }
+
+  .soft {
+    fill: light-dark(oklch(0.92 0.025 var(--h)), oklch(0.3 0.04 var(--h)));
+  }
+
+  .ring {
+    fill: none;
+    stroke: light-dark(oklch(1 0 0 / 0.6), oklch(0.75 0.12 var(--h) / 0.35));
+    stroke-width: 2;
+  }
+
+  .chart {
+    stroke: light-dark(oklch(0.52 0.2 var(--h)), oklch(0.76 0.15 var(--h)));
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

@@ -1,0 +1,227 @@
+---
+import { site } from "@/config/site";
+import { initials, withBase } from "@/lib/url";
+import Icon from "./Icon.astro";
+
+// Only sections that have content get a link.
+const nav = [
+  { label: "About", id: "about", show: site.about.paragraphs.length > 0 },
+  { label: "Services", id: "services", show: site.services.length > 0 },
+  { label: "Work", id: "work", show: site.projects.length > 0 },
+  { label: "Experience", id: "experience", show: site.experience.length > 0 },
+  { label: "Contact", id: "contact", show: true },
+].filter((item) => item.show);
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href={withBase()} aria-label={`${site.person.name}, home`}>
+      <span class="brand-mark" aria-hidden="true">
+        {initials(site.person.name)}
+      </span>
+      <span class="brand-name">{site.person.name}</span>
+    </a>
+
+    <nav class="nav" id="primary-nav" aria-label="Main" data-nav>
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a href={withBase(`#${item.id}`)}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+        <span class="visually-hidden">Dark mode</span>
+        <Icon name="sun" />
+        <Icon name="moon" />
+      </button>
+      <button
+        class="icon-btn menu-toggle"
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="primary-nav"
+      >
+        <span class="visually-hidden">Menu</span>
+        <Icon name="menu" />
+        <Icon name="close" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in oklab, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: var(--header-h);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-right: auto;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.8rem;
+    background: linear-gradient(135deg, var(--accent), oklch(0.62 0.2 calc(var(--hue) + 50)));
+    color: var(--on-accent);
+    font-size: 0.95rem;
+    letter-spacing: 0;
+  }
+
+  .nav ul {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+  }
+
+  .nav a:hover,
+  .nav a[aria-current="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .icon-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* one icon at a time: the sun in the light theme, the moon in the dark one */
+  .theme-toggle :global(.icon) {
+    grid-area: 1 / 1;
+  }
+
+  .theme-toggle :global(.icon:last-of-type) {
+    display: none;
+  }
+
+  :global(:root[data-theme="dark"]) .theme-toggle :global(.icon:first-of-type) {
+    display: none;
+  }
+
+  :global(:root[data-theme="dark"]) .theme-toggle :global(.icon:last-of-type) {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .theme-toggle :global(.icon:first-of-type) {
+      display: none;
+    }
+
+    :global(:root:not([data-theme])) .theme-toggle :global(.icon:last-of-type) {
+      display: block;
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  .menu-toggle :global(.icon) {
+    grid-area: 1 / 1;
+  }
+
+  .menu-toggle :global(.icon:last-of-type),
+  .menu-toggle[aria-expanded="true"] :global(.icon:first-of-type) {
+    display: none;
+  }
+
+  .menu-toggle[aria-expanded="true"] :global(.icon:last-of-type) {
+    display: block;
+  }
+
+  /* Small screens: with JavaScript the links collapse behind the menu button; without it they stay visible. */
+  @media (max-width: 52rem) {
+    .bar {
+      flex-wrap: wrap;
+      padding-block: 0.5rem;
+    }
+
+    .nav {
+      order: 3;
+      width: 100%;
+    }
+
+    .nav ul {
+      flex-wrap: wrap;
+    }
+
+    :global(.js) .menu-toggle {
+      display: inline-grid;
+    }
+
+    :global(.js) .nav {
+      display: none;
+    }
+
+    :global(.js) .nav[data-open] {
+      display: block;
+      padding-bottom: 0.75rem;
+    }
+
+    :global(.js) .nav[data-open] ul {
+      flex-direction: column;
+    }
+  }
+</style>

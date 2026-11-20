@@ -1,0 +1,301 @@
+---
+// One case-study page per project in src/config/site.ts.
+import type { GetStaticPaths } from "astro";
+import { site } from "@/config/site";
+import { asset, withBase } from "@/lib/url";
+import Base from "@/layouts/Base.astro";
+import Art from "@/components/Art.astro";
+import Icon from "@/components/Icon.astro";
+
+export const getStaticPaths = (() =>
+  site.projects.map((project, index) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      previous: site.projects[index - 1],
+      next: site.projects[index + 1],
+    },
+  }))) satisfies GetStaticPaths;
+
+const { project, previous, next } = Astro.props;
+const sections = [
+  { title: "Overview", text: project.overview },
+  { title: "The challenge", text: project.challenge },
+  { title: "The solution", text: project.solution },
+];
+---
+
+<Base title={`${project.title} | ${site.person.name}`} description={project.tagline}>
+  <article class="project">
+    <header class="container head">
+      <a class="back" href={withBase("#work")}>
+        <Icon name="arrow-left" />
+        All projects
+      </a>
+      <p class="eyebrow">{project.category}</p>
+      <h1>{project.title}</h1>
+      <p class="tagline">{project.tagline}</p>
+      {(project.links?.live || project.links?.source) && (
+        <p class="buttons">
+          {project.links.live && (
+            <a class="btn btn--primary" href={project.links.live} rel="noopener noreferrer">
+              Visit the site
+              <Icon name="arrow-up-right" />
+            </a>
+          )}
+          {project.links.source && (
+            <a class="btn btn--ghost" href={project.links.source} rel="noopener noreferrer">
+              View the source
+            </a>
+          )}
+        </p>
+      )}
+    </header>
+
+    <div class="container cover">
+      <div class="cover-box">
+        {project.image ? (
+          <img src={asset(project.image)} alt={project.imageAlt ?? ""} width="1120" height="640" />
+        ) : (
+          <Art variant={project.art} hue={project.hue} seed={project.slug} />
+        )}
+      </div>
+    </div>
+
+    <div class="container layout">
+      <div class="story">
+        {sections.map((section) => (
+          <section>
+            <h2>{section.title}</h2>
+            <p>{section.text}</p>
+          </section>
+        ))}
+        {project.results.length > 0 && (
+          <section>
+            <h2>Results</h2>
+            <ul class="results">
+              {project.results.map((item) => (
+                <li>
+                  <Icon name="check" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+
+      <aside class="meta" aria-label="Project details">
+        <dl>
+          <div>
+            <dt>Year</dt>
+            <dd>{project.year}</dd>
+          </div>
+          <div>
+            <dt>Role</dt>
+            <dd>{project.role}</dd>
+          </div>
+          <div>
+            <dt>Stack</dt>
+            <dd>
+              <ul class="chips">
+                {project.stack.map((item) => (
+                  <li class="chip">{item}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+
+    <nav class="container pager" aria-label="More projects">
+      {previous ? (
+        <a href={withBase(`projects/${previous.slug}/`)} rel="prev">
+          <span>Previous</span>
+          {previous.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a class="next" href={withBase(`projects/${next.slug}/`)} rel="next">
+          <span>Next</span>
+          {next.title}
+        </a>
+      )}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding-block: clamp(2rem, 5vw, 4rem) var(--section);
+  }
+
+  .head {
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .eyebrow {
+    margin-bottom: 0;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: -0.03em;
+  }
+
+  .tagline {
+    max-width: 55ch;
+    color: var(--muted);
+    font-size: 1.25rem;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .cover {
+    margin-block: 2.5rem 3.5rem;
+  }
+
+  /* the box has its own ratio, so nothing moves while the cover loads */
+  .cover-box {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 1.4);
+  }
+
+  .cover-box :global(.art),
+  .cover-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .layout {
+    display: grid;
+    gap: 3rem;
+  }
+
+  @media (min-width: 60rem) {
+    .layout {
+      grid-template-columns: 1fr 20rem;
+      gap: 5rem;
+    }
+  }
+
+  .story {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.75rem;
+  }
+
+  .story p {
+    max-width: 62ch;
+    color: var(--muted);
+  }
+
+  .results {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .results li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .results :global(.icon) {
+    margin-top: 0.25em;
+    color: var(--accent);
+  }
+
+  .meta {
+    align-self: start;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .meta dl {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+  }
+
+  .meta dt {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .meta dd {
+    margin: 0.2rem 0 0;
+    font-weight: 600;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .pager a {
+    display: grid;
+    gap: 0.2rem;
+    min-height: 2.75rem;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .pager a:hover {
+    color: var(--accent);
+  }
+
+  .pager span {
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .next {
+    text-align: right;
+    margin-left: auto;
+  }
+</style>

@@ -1,0 +1,209 @@
+---
+import { site } from "@/config/site";
+import { asset, withBase } from "@/lib/url";
+import Art from "./Art.astro";
+import Icon from "./Icon.astro";
+
+const { projects } = site;
+---
+
+{projects.length > 0 && (
+  <section id="work" class="section" aria-labelledby="work-title">
+    <div class="container">
+      <div class="reveal">
+        <p class="eyebrow">Selected work</p>
+        <h2 id="work-title" class="section-title">
+          Projects I am proud of
+        </h2>
+        <p class="section-lead">A few recent projects. Open one to read the story behind it.</p>
+      </div>
+
+      <ul class="grid">
+        {projects.map((project, i) => (
+          <li
+            class:list={["card reveal", { featured: project.featured }]}
+            style={`--delay: ${(i % 3) * 0.07}s`}
+          >
+            <div class="cover">
+              {project.image ? (
+                <img
+                  src={asset(project.image)}
+                  alt={project.imageAlt ?? ""}
+                  loading="lazy"
+                  width="640"
+                  height="400"
+                />
+              ) : (
+                <Art variant={project.art} hue={project.hue} seed={project.slug} />
+              )}
+            </div>
+            <div class="body">
+              <p class="category">
+                {project.category} <span aria-hidden="true">·</span> {project.year}
+              </p>
+              <h3>
+                <a href={withBase(`projects/${project.slug}/`)}>{project.title}</a>
+              </h3>
+              <p class="tagline">{project.tagline}</p>
+              <ul class="chips" aria-label="Technologies">
+                {project.stack.slice(0, 4).map((item) => (
+                  <li class="chip">{item}</li>
+                ))}
+              </ul>
+              <span class="more" aria-hidden="true">
+                Read the case study <Icon name="arrow-right" />
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+
+  /* a featured project takes a whole row, cover on the left */
+  @media (min-width: 48rem) {
+    .featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+    }
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition:
+      border-color 0.2s,
+      transform 0.3s var(--ease),
+      box-shadow 0.3s;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 40px -28px var(--shadow);
+  }
+
+  .cover {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .featured .cover {
+    aspect-ratio: auto;
+    min-height: 18rem;
+  }
+
+  .featured .body {
+    justify-content: center;
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .featured h3 {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+  }
+
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover :global(.art) {
+    transition: transform 0.6s var(--ease);
+  }
+
+  .card:hover .cover :global(.art),
+  .card:hover .cover img {
+    transform: scale(1.04);
+  }
+
+  .body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.5rem;
+  }
+
+  .category {
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  /* The whole card is clickable through the title link */
+  h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  h3 a:focus-visible {
+    outline: none;
+  }
+
+  .card:has(h3 a:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+
+  .chips .chip {
+    font-size: 0.8125rem;
+    background: var(--surface-2);
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .more :global(.icon) {
+    transition: transform 0.2s var(--ease);
+  }
+
+  .card:hover .more :global(.icon) {
+    transform: translateX(4px);
+  }
+</style>

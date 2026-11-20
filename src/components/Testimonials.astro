@@ -1,0 +1,79 @@
+---
+import { site } from "@/config/site";
+
+const { testimonials } = site;
+---
+
+{testimonials.length > 0 && (
+  <section id="testimonials" class="section" aria-labelledby="testimonials-title">
+    <div class="container">
+      <div class="reveal">
+        <p class="eyebrow">Kind words</p>
+        <h2 id="testimonials-title" class="section-title">
+          What clients say
+        </h2>
+      </div>
+      <ul class="grid">
+        {testimonials.map((item, i) => (
+          <li class="reveal" style={`--delay: ${i * 0.08}s`}>
+            <figure>
+              <blockquote>
+                <p>{item.quote}</p>
+              </blockquote>
+              <figcaption>
+                <strong>{item.name}</strong>
+                <span>{item.role}</span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  figure {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  blockquote {
+    flex: 1;
+    margin: 0 0 1.5rem;
+    font-size: 1.0625rem;
+  }
+
+  blockquote::before {
+    content: "\201C";
+    display: block;
+    margin-bottom: -0.5rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  figcaption {
+    display: flex;
+    flex-direction: column;
+  }
+
+  figcaption span {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+</style>

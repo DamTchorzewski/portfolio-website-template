@@ -1,0 +1,120 @@
+---
+import { site } from "@/config/site";
+
+const { experience } = site;
+---
+
+{experience.length > 0 && (
+  <section id="experience" class="section alt" aria-labelledby="experience-title">
+    <div class="container">
+      <div class="reveal">
+        <p class="eyebrow">Experience</p>
+        <h2 id="experience-title" class="section-title">
+          Where I have worked
+        </h2>
+      </div>
+      <ol class="timeline">
+        {experience.map((job, i) => (
+          <li class="job reveal" style={`--delay: ${i * 0.08}s`}>
+            <p class="period">{job.period}</p>
+            <div class="content">
+              <h3>{job.role}</h3>
+              <p class="company">{job.company}</p>
+              <p class="summary">{job.summary}</p>
+              {job.highlights.length > 0 && (
+                <ul class="highlights">
+                  {job.highlights.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+)}
+
+<style>
+  .alt {
+    background: var(--surface-2);
+  }
+
+  .timeline {
+    margin-top: 3rem;
+    border-left: 2px solid var(--line);
+  }
+
+  .job {
+    position: relative;
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding: 0 0 2.5rem 1.75rem;
+  }
+
+  .job:last-child {
+    padding-bottom: 0;
+  }
+
+  .job::before {
+    content: "";
+    position: absolute;
+    top: 0.45rem;
+    left: -0.5rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+    background: var(--surface-2);
+  }
+
+  @media (min-width: 48rem) {
+    .job {
+      grid-template-columns: 11rem 1fr;
+    }
+  }
+
+  .period {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding-top: 0.2rem;
+  }
+
+  h3 {
+    font-size: 1.375rem;
+  }
+
+  .company {
+    margin-top: 0.2rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .summary {
+    margin-top: 0.6rem;
+    color: var(--muted);
+  }
+
+  .highlights {
+    margin-top: 0.8rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .highlights li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+
+  .highlights li::before {
+    content: "";
+    position: absolute;
+    top: 0.7em;
+    left: 0;
+    width: 0.6rem;
+    height: 2px;
+    background: var(--accent);
+  }
+</style>
