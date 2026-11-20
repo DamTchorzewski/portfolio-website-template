@@ -1,0 +1,123 @@
+# Build & Deploy (level 1 of reops/standards/workflows.md: a static site with a build).
+#
+# Triggers:
+#   - push to main     → check, build, publish to GitHub Pages, then `health` against the live site,
+#   - push to develop  → check and build only (the result is a downloadable artifact), no deploy,
+#   - manual run       → same as the branch it is run from.
+# A change to the documentation alone (md files, docs/, LICENSE) starts nothing. Nothing is built on a schedule.
+#
+# One-time setting by the owner of a fork: Settings → Pages → Build and deployment → Source = "GitHub Actions"
+# (and, to publish from a fork, Settings → Environments → github-pages → Deployment branches = main).
+# The public address is read from the Pages settings (configure-pages) and handed to the build as SITE_URL, so the
+# site works under https://<owner>.github.io/<repo>/ with no edit. A custom domain: set the repository
+# variable SITE_URL (see .env.example).
+# Secrets: none. Variables: SITE_URL (optional). To pause: Actions → this workflow → ⋯ → Disable workflow.
+# Standard: reops/standards/workflows.md (global, outside this repo)
+
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main, develop]
+    # a change to the documentation alone starts nothing
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - "**/.env.example"
+      - ".github/dependabot.yml"
+      - ".scratch/**"
+  workflow_dispatch:
+
+concurrency:
+  # One run per branch at a time; a new one waits instead of cancelling a deploy half way.
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Format, lint, types and the content tests: stop before building when one fails.
+      - name: Check
+        run: pnpm check
+
+      - name: Read the Pages address
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Build
+        run: pnpm build
+        env:
+          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
+
+      # main: the build goes to GitHub Pages; any other branch keeps it as a downloadable artifact.
+      - name: Upload the Pages artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+      - name: Upload the build (not main)
+        if: github.ref != 'refs/heads/main'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-${{ github.ref_name }}
+          path: dist
+          retention-days: 14
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  health:
+    name: Health check
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      # The script has no dependencies, so there is no install step.
+      - name: Check the live site
+        run: pnpm health
+        env:
+          SITE_URL: ${{ needs.deploy.outputs.page_url }}
