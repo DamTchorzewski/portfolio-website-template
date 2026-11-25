@@ -57,4 +57,4 @@ Standard: `reops/standards/github-settings.md`.
 | Default branch                           | `main`                                                                                |
 | Settings → General                       | **Template repository** on (the "Use this template" button)                           |
 
-No branch ruleset (decision of 2026-11-19, see the standard).
+Branch rulesets (2026-11-25, the solo profile of the standard): `Protect history`, `Protect main` and `Protect develop`.
